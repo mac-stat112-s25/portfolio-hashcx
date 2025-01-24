@@ -14,7 +14,6 @@ packages <- c("wordcloud2", "here")
 #| echo: false
 
 install.packages(setdiff(packages, rownames(installed.packages())), repos = "http://cran.us.r-project.org")
-
 ```
 
 ```{r}
