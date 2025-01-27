@@ -7,7 +7,6 @@ Welcome to my online portfolio for COMP/STAT112 course taken at [Macalester Coll
 #| echo: false
 
 packages <- c("wordcloud2", "here")
-
 ```
 
 ```{r}
