@@ -65,47 +65,135 @@
     ]
   },
   {
+    "objectID": "ica/quarto-demo.html",
+    "href": "ica/quarto-demo.html",
+    "title": "\n6  My first Quarto document\n",
+    "section": "",
+    "text": "6.1 Intro\nMacalester College is in the Twin Cities. It has:\nCheck it out for yourself:",
+    "crumbs": [
+      "In-class Activities",
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>My first Quarto document</span>"
+    ]
+  },
+  {
+    "objectID": "ica/quarto-demo.html#intro",
+    "href": "ica/quarto-demo.html#intro",
+    "title": "\n6  My first Quarto document\n",
+    "section": "",
+    "text": "four seasons\nbagpipes\ndelightful students",
+    "crumbs": [
+      "In-class Activities",
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>My first Quarto document</span>"
+    ]
+  },
+  {
+    "objectID": "ica/quarto-demo.html#exercise-1-deduce-quarto-features",
+    "href": "ica/quarto-demo.html#exercise-1-deduce-quarto-features",
+    "title": "\n6  My first Quarto document\n",
+    "section": "\n6.2 Exercise 1: Deduce Quarto features",
+    "text": "6.2 Exercise 1: Deduce Quarto features\nCheck out the appearance and contents of this document. Thoughts?\nIn the toolbar at the top of this document, Render the .qmd file into a .html file. Where is this file stored? Thoughts about its appearance / contents? Can you edit it?\nToggling between the .qmd and .html files, explain the purpose of the following features in the .qmd file:\n*\n**\n#\n-\n\\\n![](url)",
+    "crumbs": [
+      "In-class Activities",
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>My first Quarto document</span>"
+    ]
+  },
+  {
+    "objectID": "ica/quarto-demo.html#exercise-2-code",
+    "href": "ica/quarto-demo.html#exercise-2-code",
+    "title": "\n6  My first Quarto document\n",
+    "section": "\n6.3 Exercise 2: Code",
+    "text": "6.3 Exercise 2: Code\nHow does this appear in the .qmd? The .html? So…?!\nseq(from = 100, to = 1000, by = 50)",
+    "crumbs": [
+      "In-class Activities",
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>My first Quarto document</span>"
+    ]
+  },
+  {
+    "objectID": "ica/quarto-demo.html#exercise-3-chunks",
+    "href": "ica/quarto-demo.html#exercise-3-chunks",
+    "title": "\n6  My first Quarto document\n",
+    "section": "\n6.4 Exercise 3: Chunks",
+    "text": "6.4 Exercise 3: Chunks\nQuarto isn’t a mind reader – we must distinguish R code from text. We do so by putting code inside an R chunk:\n\nseq(from = 100, to = 1000, by = 50)\n\n [1]  100  150  200  250  300  350  400  450  500  550  600  650  700  750  800\n[16]  850  900  950 1000\n\n\n\nPut the seq() code in the chunk.\nPress the green arrow in the top right of the chunk. What happens in the qmd?\nRender. What appears in the html: R code, output, or both?",
+    "crumbs": [
+      "In-class Activities",
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>My first Quarto document</span>"
+    ]
+  },
+  {
+    "objectID": "ica/quarto-demo.html#exercise-4-practice",
+    "href": "ica/quarto-demo.html#exercise-4-practice",
+    "title": "\n6  My first Quarto document\n",
+    "section": "\n6.5 Exercise 4: Practice",
+    "text": "6.5 Exercise 4: Practice\n\nUse R code to create the following sequence: 10 10 10 10\nStore the sequence as four_tens.\nUse an R function (which we haven’t learned!) to add up the numbers in four_tens.\n\n\nfour_tens &lt;- rep(10, 4)\nsum(four_tens)\n\n[1] 40",
+    "crumbs": [
+      "In-class Activities",
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>My first Quarto document</span>"
+    ]
+  },
+  {
+    "objectID": "ica/quarto-demo.html#exercise-5-fix-this-code",
+    "href": "ica/quarto-demo.html#exercise-5-fix-this-code",
+    "title": "\n6  My first Quarto document\n",
+    "section": "\n6.6 Exercise 5: Fix this code",
+    "text": "6.6 Exercise 5: Fix this code\nCode is a form of communication, and the code below doesn’t cut it.\nPut the code in a chunk and fix it.\nRep(x = 1, times = 10) seq(from=100,to=1000,length=20) theNumberofStudentsinthisclass&lt;-27\n\nrep(x = 1, times = 10)\n\n [1] 1 1 1 1 1 1 1 1 1 1\n\nseq(from = 100, to = 1000, length = 20)\n\n [1]  100.0000  147.3684  194.7368  242.1053  289.4737  336.8421  384.2105\n [8]  431.5789  478.9474  526.3158  573.6842  621.0526  668.4211  715.7895\n[15]  763.1579  810.5263  857.8947  905.2632  952.6316 1000.0000\n\nnumStudents &lt;- 27",
+    "crumbs": [
+      "In-class Activities",
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>My first Quarto document</span>"
+    ]
+  },
+  {
+    "objectID": "ica/quarto-demo.html#exercise-6-comments",
+    "href": "ica/quarto-demo.html#exercise-6-comments",
+    "title": "\n6  My first Quarto document\n",
+    "section": "\n6.7 Exercise 6: Comments",
+    "text": "6.7 Exercise 6: Comments\nRun the chunk below. Notice that R ignores anything in a line starting with a pound sign (#). If we took the # away we’d get an error!\n\n# This is a comment\n4 + 5\n\n[1] 9\n\n\nWe’ll utilize this feature to comment our code, i.e. leave short notes about what our code is doing. Below, replace the ??? with an appropriate comment.\n\n# ???\ntemperature_c &lt;- 10\ntemperature_f &lt;- temperature_c * 9/5 + 32\ntemperature_f\n\n[1] 50",
+    "crumbs": [
+      "In-class Activities",
+      "<span class='chapter-number'>6</span>  <span class='chapter-title'>My first Quarto document</span>"
+    ]
+  },
+  {
     "objectID": "ica/ica-uni.html",
     "href": "ica/ica-uni.html",
-    "title": "6  Univariate Viz",
+    "title": "7  Univariate Viz",
     "section": "",
     "text": "Use this file for practice with the univariate viz in-class activity. Refer to the class website for details.",
     "crumbs": [
       "In-class Activities",
-      "<span class='chapter-number'>6</span>  <span class='chapter-title'>Univariate Viz</span>"
+      "<span class='chapter-number'>7</span>  <span class='chapter-title'>Univariate Viz</span>"
     ]
   },
   {
     "objectID": "ica/ica-bi.html",
     "href": "ica/ica-bi.html",
-    "title": "7  Bivariate Viz",
+    "title": "8  Bivariate Viz",
     "section": "",
     "text": "Use this file for practice with the bivariate viz in-class activity. Refer to the class website for details.",
     "crumbs": [
       "In-class Activities",
-      "<span class='chapter-number'>7</span>  <span class='chapter-title'>Bivariate Viz</span>"
+      "<span class='chapter-number'>8</span>  <span class='chapter-title'>Bivariate Viz</span>"
     ]
   },
   {
     "objectID": "ica/ica-multi.html",
     "href": "ica/ica-multi.html",
-    "title": "8  Mulivariate Viz",
+    "title": "9  Mulivariate Viz",
     "section": "",
     "text": "Use this file for practice with the mulivariate viz in-class activity. Refer to the class website for details.",
     "crumbs": [
       "In-class Activities",
-      "<span class='chapter-number'>8</span>  <span class='chapter-title'>Mulivariate Viz</span>"
+      "<span class='chapter-number'>9</span>  <span class='chapter-title'>Mulivariate Viz</span>"
     ]
   },
   {
     "objectID": "ica/ica-spatial.html",
     "href": "ica/ica-spatial.html",
-    "title": "9  Spatial Viz",
+    "title": "10  Spatial Viz",
     "section": "",
     "text": "Use this file for practice with the spatial viz in-class activity. Refer to the class website for details.",
     "crumbs": [
       "In-class Activities",
-      "<span class='chapter-number'>9</span>  <span class='chapter-title'>Spatial Viz</span>"
+      "<span class='chapter-number'>10</span>  <span class='chapter-title'>Spatial Viz</span>"
     ]
   }
 ]
