@@ -2,4 +2,137 @@
 title: "Univariate Viz"
 ---
 
-Use this file for practice with the **univariate viz** in-class activity.  Refer to the class website for details.
+```{r}
+# Load package
+library(tidyverse)
+```
+
+
+```{r}
+# Import data
+hikes <- read.csv("https://mac-stat.github.io/data/high_peaks.csv")
+```
+
+```{r}
+head(hikes)
+```
+
+## Qualitative: Bar Chart
+
+```{r}
+# Use the ggplot function
+ggplot(hikes, aes(x = rating))
+```
+
+```{r}
+# COMMENT on the change in the code and the corresponding change in the plot
+ggplot(hikes, aes(x = rating)) +
+  geom_bar()
+```
+
+```{r}
+# COMMENT on the change in the code and the corresponding change in the plot
+ggplot(hikes, aes(x = rating)) +
+  geom_bar() +
+  labs(x = "Rating", y = "Number of hikes")
+```
+
+```{r}
+# COMMENT on the change in the code and the corresponding change in the plot
+ggplot(hikes, aes(x = rating)) +
+  geom_bar(fill = "blue") +
+  labs(x = "Rating", y = "Number of hikes")
+```
+
+```{r}
+# COMMENT on the change in the code and the corresponding change in the plot
+ggplot(hikes, aes(x = rating)) +
+  geom_bar(color = "orange", fill = "blue") +
+  labs(x = "Rating", y = "Number of hikes")
+```
+
+```{r}
+# COMMENT on the change in the code and the corresponding change in the plot
+ggplot(hikes, aes(x = rating)) +
+  geom_bar(color = "orange", fill = "blue")  +
+  labs(x = "Rating", y = "Number of hikes") +
+  theme_minimal()
+```
+
+## Quantitative: Histogram
+
+```{r}
+# COMMENT on the change in the code and the corresponding change in the plot
+ggplot(hikes, aes(x = elevation)) +
+  geom_bar(color = "orange", fill = "blue")  +
+  labs(x = "Elevation", y = "Number of hikes") +
+  theme_minimal()
+```
+
+```{r}
+ggplot(hikes, aes(x = elevation))
+```
+
+```{r}
+# COMMENT on the change in the code and the corresponding change in the plot
+ggplot(hikes, aes(x = elevation)) +
+  geom_histogram()
+```
+
+```{r}
+# COMMENT on the change in the code and the corresponding change in the plot
+ggplot(hikes, aes(x = elevation)) +
+  geom_histogram(color = "white") 
+```
+
+```{r}
+# COMMENT on the change in the code and the corresponding change in the plot
+ggplot(hikes, aes(x = elevation)) +
+  geom_histogram(color = "white", fill = "blue") 
+```
+
+```{r}
+# COMMENT on the change in the code and the corresponding change in the plot
+ggplot(hikes, aes(x = elevation)) +
+  geom_histogram(color = "white") +
+  labs(x = "Elevation (feet)", y = "Number of hikes")
+```
+
+```{r}
+# COMMENT on the change in the code and the corresponding change in the plot
+ggplot(hikes, aes(x = elevation)) +
+  geom_histogram(color = "white", binwidth = 1000) +
+  labs(x = "Elevation (feet)", y = "Number of hikes")
+```
+
+```{r}
+# COMMENT on the change in the code and the corresponding change in the plot
+ggplot(hikes, aes(x = elevation)) +
+  geom_histogram(color = "white", binwidth = 5) +
+  labs(x = "Elevation (feet)", y = "Number of hikes")
+```
+
+```{r}
+# COMMENT on the change in the code and the corresponding change in the plot
+ggplot(hikes, aes(x = elevation)) +
+  geom_histogram(color = "white", binwidth = 200) +
+  labs(x = "Elevation (feet)", y = "Number of hikes")
+```
+
+## Quantitative: Density Plot
+
+```{r}
+ggplot(hikes, aes(x = elevation)) +
+  geom_density()
+```
+
+```{r}
+ggplot(hikes, aes(x = elevation)) +
+  geom_density(color = "blue")
+```
+
+```{r}
+ggplot(hikes, aes(x = elevation)) +
+  geom_density(color = "blue", fill = "orange")
+```
+
