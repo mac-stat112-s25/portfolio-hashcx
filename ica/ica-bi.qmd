@@ -2,4 +2,239 @@
 title: "Bivariate Viz"
 ---
 
-Use this file for practice with the **bivariate viz** in-class activity.  Refer to the class website for details.
+## Review
+
+```{r}
+# Import data
+survey <- read.csv("https://hash-mac.github.io/stat112site-s25/data/survey.csv")
+
+# How many students have now filled out the survey?
+nrow(survey)
+
+# What type of variables do we have?
+str(survey)
+```
+
+```{r}
+library(tidyverse)
+```
+
+
+```{r}
+ggplot(data = survey, mapping = aes(x = hangout)) +
+  geom_bar()
+```
+
+```{r}
+ggplot(data = survey, mapping = aes(x = fav_temp_c)) +
+  geom_histogram()
+```
+
+```{r}
+ggplot(data = survey, mapping = aes(x = fav_temp_c)) +
+  geom_density()
+```
+
+
+```{r}
+data.frame(temp_3pm = c(24, 26, 20, 15, 15, 15), temp_9am = c(14, 18, 15, 13, 11, 11))
+```
+
+```{r}
+weather <- data.frame(temp_3pm = c(24, 26, 20, 15, 15, 0, 40, 60, 57, 44, 51, 75),
+                      location = rep(c("A", "B"), each = 6))
+weather
+```
+
+```{r}
+ggplot(weather, aes(x = temp_3pm)) +
+      geom_density()
+```
+
+```{r}
+ggplot(weather, aes(x = temp_3pm, colour = location)) +
+      geom_density()
+```
+
+```{r}
+weather <- data.frame(rain_today = c("no", "no", "no", "no", "yes", "no", "yes", "no", "yes", "yes", "no", "yes"),
+                        location = c(rep("A", 7), rep("B", 5)))
+    weather
+```
+```{r}
+ggplot(weather, aes(x = location)) +
+      geom_bar()
+```
+
+```{r}
+ggplot(weather, aes(x = location, fill = rain_today)) +
+      geom_bar()
+```
+
+## Excercises
+
+```{r}
+# Load data
+elections <- read.csv("https://mac-stat.github.io/data/election_2020_county.csv")
+
+# Check it out
+head(elections)
+str(elections)
+```
+
+### E0
+
+```{r}
+ggplot(data = elections, mapping = aes(x = winner_20)) +
+  geom_bar()
+```
+
+```{r}
+ggplot(data = elections, mapping = aes(x = repub_pct_20)) +
+  geom_histogram()
+```
+
+## Numerical vs Numerical
+
+```{r}
+ggplot(data = elections, mapping = aes(x = repub_pct_16, y = repub_pct_20)) +
+  geom_point()
+```
+
+```{r}
+# Set up the plotting frame
+# How does this differ than the frame for our histogram of repub_pct_20 alone?
+ggplot(elections, aes(y = repub_pct_20, x = repub_pct_16))
+```
+
+```{r}
+# Add a layer of points for each county
+# Take note of the geom!
+ggplot(elections, aes(y = repub_pct_20, x = repub_pct_16)) +
+  geom_point()
+```
+
+```{r}
+# Change the shape of the points
+# What happens if you change the shape to another number?
+ggplot(elections, aes(y = repub_pct_20, x = repub_pct_16)) +
+  geom_point(shape = 3)
+```
+
+```{r}
+# YOU TRY: Modify the code to make the points "orange"
+# NOTE: Try to anticipate if "color" or "fill" will be useful here. Then try both.
+ggplot(elections, aes(y = repub_pct_20, x = repub_pct_16)) +
+  geom_point(color = "orange")
+```
+
+```{r}
+# Add a layer that represents each county by the state it's in
+# Take note of the geom and the info it needs to run!
+ggplot(elections, aes(y = repub_pct_20, x = repub_pct_16)) +
+  geom_text(aes(label = state_abbr))
+```
+
+```{r}
+ggplot(elections, aes(y = repub_pct_20, x = repub_pct_16)) +
+  geom_point() +
+  geom_smooth()
+```
+
+```{r}
+ggplot(elections, aes(y = repub_pct_20, x = repub_pct_16)) +
+  geom_smooth()
+```
+
+```{r}
+ggplot(elections, aes(y = repub_pct_20, x = repub_pct_16)) +
+  geom_point() +
+  geom_smooth(method = "lm")
+```
+
+```{r}
+ggplot(elections, aes(y = repub_pct_20, x = repub_pct_16)) +
+  geom_smooth(method = "lm")
+```
+
+```{r}
+ggplot(elections, aes(y = repub_pct_20, x = median_rent)) +
+  geom_point() +
+  geom_smooth(method = "lm")
+```
+
+```{r}
+ggplot(elections, aes(y = repub_pct_20, x = median_age)) +
+  geom_point() +
+  geom_smooth(method = "lm")
+```
+
+## Numerical vs Categorical
+
+```{r}
+ggplot(elections, aes(y = repub_pct_20, x = historical)) +
+  geom_point()
+```
+
+```{r}
+# Side-by-side violin plots
+ggplot(elections, aes(y = repub_pct_20, x = historical)) +
+  geom_violin()
+```
+
+```{r}
+# Side-by-side boxplots (defined below)
+ggplot(elections, aes(y = repub_pct_20, x = historical)) +
+  geom_boxplot()
+```
+
+```{r}
+ggplot(elections, aes(x = repub_pct_20, colour = historical)) +
+  geom_density()
+```
+
+```{r}
+# Name two "bad" things about this plot
+ggplot(elections, aes(x = repub_pct_20, fill = historical)) +
+  geom_density()
+```
+
+```{r}
+# What does scale_fill_manual do?
+ggplot(elections, aes(x = repub_pct_20, fill = historical)) +
+  geom_density() +
+  scale_fill_manual(values = c("blue", "purple", "red"))
+```
+
+```{r}
+# What does alpha = 0.5 do?
+# Play around with different values of alpha, between 0 and 1
+ggplot(elections, aes(x = repub_pct_20, fill = historical)) +
+  geom_density(alpha = 0.5) +
+  scale_fill_manual(values = c("blue", "purple", "red"))
+```
+
+```{r}
+# What does facet_wrap do?!
+ggplot(elections, aes(x = repub_pct_20, fill = historical)) +
+  geom_density() +
+  scale_fill_manual(values = c("blue", "purple", "red")) +
+  facet_wrap(~ historical)
+```
+
+```{r}
+# Let's try a similar grouping strategy with a histogram instead of density plot.
+# Why is this terrible?
+ggplot(elections, aes(x = repub_pct_20, fill = historical)) +
+  geom_histogram(color = "white") +
+  scale_fill_manual(values = c("blue", "purple", "red"))
+```
+
+# Categorical x Categorical
+
+```{r}
+# Plot 1: adjust this to recreate the top plot
+ggplot(elections, aes(x = historical)) +
+  geom_bar()
+```
+
