@@ -43,6 +43,18 @@ ggplot(energy, aes(y = therms, x = hdd, color = renovated)) +
 
 ```{r}
 library(leaflet)
+
+
+
+## Ex 3
+
+```{r}
+library(tidyverse)
+library(leaflet)
+library(rnaturalearth)  # geographical boundaries
+library(mosaic)         # map themes
+library(sf)             # convert to sf boundaries
+library(maps)           # state- and county-level boundaries
 ```
 
 
@@ -239,3 +251,130 @@ m %>% addCircleMarkers(~lng, ~lat, radius = ~size,
   color = ~greens(value), fillOpacity = 0.5)
 ```
 
+# Import starbucks location data
+starbucks <- read.csv("https://mac-stat.github.io/data/starbucks.csv")
+starbucks
+```
+
+```{r}
+# Don't worry about the syntax
+starbucks_mn <- starbucks |>   
+  filter(Country == "US", State.Province == "MN")
+starbucks_mn
+```
+
+```{r}
+sb_icon = "https://cdn.freebiesupply.com/logos/large/2x/starbucks-logo-png-transparent.png"
+
+leaflet(data = starbucks_mn) |> 
+  addTiles() |> 
+  addMarkers(
+    # show popup on hover
+    label = starbucks_mn$Store.Name,
+    
+    # customize markers
+    icon = list(
+      iconUrl = sb_icon,
+      iconSize = c(20,20)
+    )
+  )
+
+```
+
+
+## Ex 3
+```{r}
+ggplot(data = starbucks, mapping = aes(x = Longitude, y = Latitude)) +
+  geom_point()
+```
+
+## Ex 4
+
+```{r}
+world_boundaries <- ne_countries(returnclass = "sf")
+```
+
+```{r}
+ggplot(data = world_boundaries) +
+  geom_sf()
+```
+
+```{r}
+ggplot() +
+  geom_sf(data = world_boundaries) +
+  geom_point(
+    data = starbucks, 
+    mapping = aes(x = Longitude, y = Latitude),
+    color = "#548427",
+    alpha = .2,
+    size = .2
+  ) +
+  theme_map()
+```
+
+## Ex 5
+```{r}
+starbucks_cma <- starbucks |> 
+  filter(Country %in% c('CA', 'MX', 'US'))
+```
+
+```{r}
+cma_boundaries <- ne_states(
+  country = c("Canada", "Mexico", "United States of America"),
+  returnclass = "sf"
+)
+```
+
+```{r}
+ggplot() +
+  geom_sf(data = cma_boundaries) +
+  geom_point(
+    data = starbucks_cma, 
+    mapping = aes(x = Longitude, y = Latitude),
+    color = "darkgreen",
+    sizes = .2,
+    alpah = .3) +
+  theme_map() +
+  coord_sf(xlim = c(-170, -10), expand = TRUE)
+```
+
+## Ex 6
+
+```{r}
+startbucks_midwest <- starbucks |> 
+  filter(State.Province %in% c("MN", "ND", "SD", "WI"))
+```
+
+```{r}
+midwest_boundaries <- st_as_sf(
+  maps::map("county",
+            regions = c("minnesota", "wisconsin", "north dakota", "south dakota"),
+            fill = TRUE,
+            plot = FALSE
+  )
+)
+```
+```{r}
+ggplot() +
+  geom_sf(data = midwest_boundaries) +
+  geom_point(data = startbucks_midwest, mapping = aes(x = Longitude, y = Latitude)) +
+  theme_map()
+```
+
+
+## Ex 7
+
+```{r}
+ggplot() +
+  geom_sf(data = midwest_boundaries) +
+  geom_density_2d(
+    data = startbucks_midwest, 
+    mapping = aes(x = Longitude, y = Latitude)
+  ) +
+  theme_map()
+```
+
+
+
+## Resouces
+- Tom Jenkins' [An Introduction to R Leaflet](https://tomjenkins.netlify.app/tutorials/r-leaflet-introduction/)
