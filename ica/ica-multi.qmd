@@ -201,7 +201,7 @@ ggplot(education, aes(y = sat, salary, colour = cut(expend, 3))) +
 
 
 ```{r}
-ggplot(education, aes(y = sat, salary, colour = cut(expend, ))) +
+ggplot(education, aes(y = sat, salary, colour = cut(expend, 2))) +
   geom_point() +
   geom_smooth(method = "lm") +
   facet_wrap(~cut(expend, 2))
