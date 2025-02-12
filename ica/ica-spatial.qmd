@@ -41,10 +41,6 @@ ggplot(energy, aes(y = therms, x = hdd, color = renovated)) +
 
 ## Ex 1
 
-```{r}
-library(leaflet)
-
-
 
 ## Ex 3
 
@@ -55,6 +51,9 @@ library(rnaturalearth)  # geographical boundaries
 library(mosaic)         # map themes
 library(sf)             # convert to sf boundaries
 library(maps)           # state- and county-level boundaries
+library(RColorBrewer)   # refine color pallet
+library(socviz)         # collection of datasets and functions used in Kealy's
+                        # 2019 book Data Visualization: A Practical Introduction
 ```
 
 
@@ -251,10 +250,17 @@ m %>% addCircleMarkers(~lng, ~lat, radius = ~size,
   color = ~greens(value), fillOpacity = 0.5)
 ```
 
+```{r}
 # Import starbucks location data
 starbucks <- read.csv("https://mac-stat.github.io/data/starbucks.csv")
 starbucks
 ```
+
+```{r}
+starbucks_us <- starbucks |> 
+  filter(Country == "US")
+```
+
 
 ```{r}
 # Don't worry about the syntax
@@ -266,8 +272,9 @@ starbucks_mn
 ```{r}
 sb_icon = "https://cdn.freebiesupply.com/logos/large/2x/starbucks-logo-png-transparent.png"
 
-leaflet(data = starbucks_mn) |> 
+leaflet(data = starbucks_mn, options = leafletOptions(minZoom = 6, maxZoom = 12)) |> 
   addTiles() |> 
+  setView(lng = median(starbucks_mn$Longitude), lat = median(starbucks_mn$Latitude), zoom = 6) |> 
   addMarkers(
     # show popup on hover
     label = starbucks_mn$Store.Name,
@@ -374,6 +381,149 @@ ggplot() +
   theme_map()
 ```
 
+## Part 3: Choropleth Maps
+
+```{r}
+elections_by_state <-  read.csv("https://mac-stat.github.io/data/election_2020_by_state.csv")
+elections_by_counties <- read.csv("https://mac-stat.github.io/data/election_2020_county.csv")
+```
+
+
+```{r}
+# Don't worry about the code!
+
+elections_by_state <- elections_by_state |> 
+  filter(state_abbr != "DC") |> 
+  select(state_name, state_abbr, repub_pct_20) |> 
+  mutate(repub_20_categories = 
+           cut(repub_pct_20, 
+               breaks = seq(30, 70, by = 5), 
+               labels = c("30-34", "35-39", "40-44", "45-49",
+                          "50-54", "55-59", "60-64", "65-70"), 
+               include.lowest = TRUE))
+
+elections_by_counties <- elections_by_counties |> 
+  select(state_name, state_abbr, county_name, county_fips,
+          repub_pct_20, median_age, median_rent) |> 
+  mutate(repub_20_categories = 
+           cut(repub_pct_20, 
+               breaks = seq(0, 100, by = 10),
+               labels = c("0-9", "10-19", "20-29", "30-39", "40-49",
+                          "50-59", "60-69", "70-79", "80-89", "90-100"),
+               include.lowest = TRUE))
+```
+
+## Ex 8
+
+```{r}
+# Get the latitude and longitude coordinates of state boundaries
+states_map <- map_data("state")
+
+# Check it out
+head(states_map)
+```
+
+```{r}
+states_map |> 
+  group_by(region) |> 
+  summarise(n = n()) |> 
+  arrange(n)
+```
+
+### Continous colors: Default
+
+```{r}
+ggplot(elections_by_state, aes(map_id = state_name, fill = repub_pct_20)) +
+  geom_map(map = states_map) +
+  expand_limits(x = states_map$long, y = states_map$lat) +
+  theme_map()
+```
+
+### Continous colors: Custom
+
+```{r}
+ggplot(elections_by_state, aes(map_id = state_name, fill = repub_pct_20)) +
+  geom_map(map = states_map) +
+  expand_limits(x = states_map$long, y = states_map$lat) +
+  theme_map() +
+  scale_fill_gradientn(name = "% Republican", 
+                      colors = c("blue", "purple", "red"),
+                      values = scales::rescale(seq(0, 100, by = 5)))
+```
+
+### Discretized Colors: Default
+
+```{r}
+ggplot(elections_by_state, aes(map_id = state_name, fill = repub_20_categories)) +
+  geom_map(map = states_map) +
+  expand_limits(x = states_map$long, y = states_map$lat) +
+  theme_map()
+```
+
+### Discretized Colors: Custom
+
+```{r}
+ggplot(elections_by_state, aes(map_id = state_name, fill = repub_20_categories)) +
+  geom_map(map = states_map) +
+  expand_limits(x = states_map$long, y = states_map$lat) +
+  theme_map() +
+  scale_fill_manual(values = rev(brewer.pal(8, "RdBu")), name = "% Republican")
+```
+### Messing Around
+
+```{r}
+ggplot(elections_by_state, aes(map_id = state_name, fill = repub_20_categories)) +
+  geom_map(map = states_map) +
+  expand_limits(x = states_map$long, y = states_map$lat) +
+  theme_map() +
+  scale_fill_manual(values = rev(brewer.pal(8, "RdBu")), name = "% Republican") +
+  geom_point(data = starbucks_us, 
+             aes(x = Longitude, y = Latitude), 
+             inherit.aes = FALSE,
+             size = .05,
+             alpha = .2)
+```
+
+### 
+
+```{r}
+data(county_map)
+county_map
+```
+
+```{r}
+elections_by_counties
+```
+
+```{r}
+elections_by_counties <- 
+  elections_by_counties |> 
+  mutate(county_fips = as.character(county_fips)) |> 
+  mutate(county_fips = ifelse(nchar(county_fips) == 4, paste0("0", county_fips), county_fips))
+elections_by_counties
+```
+
+```{r}
+ggplot(elections_by_counties, aes(map_id = county_fips, fill = repub_20_categories)) +
+  geom_map(map = county_map) +
+  expand_limits(x = county_map$long, y = county_map$lat) +
+  theme_map() +
+  theme(legend.position = "right") +
+  scale_fill_manual(values = rev(brewer.pal(10, "RdBu")), name = "% Republican") +
+  coord_equal() +
+  labs(title = "% Republican 2020")
+```
+
+```{r}
+ggplot(elections_by_counties, aes(map_id = county_fips, fill = median_rent)) +
+  geom_map(map = county_map) +
+  expand_limits(x = county_map$long, y = county_map$lat) +
+  theme_map() +
+  theme(legend.position = "right") +
+  # scale_fill_manual(values = rev(brewer.pal(10, "RdBu")), name = "") +
+  coord_equal() +
+  labs(title = "Median Rent 2020")
+```
 
 
 ## Resouces
