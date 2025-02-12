@@ -1,0 +1,41 @@
+---
+title: "Effective Viz"
+---
+
+## Ex 1
+
+```{r}
+# Load tidyverse package for plotting and wrangling
+library(tidyverse)
+
+# Import the data
+weather <- read.csv("https://mac-stat.github.io/data/weather_3_locations.csv") |> 
+  mutate(date = as.Date(date))
+```
+
+```{r}
+#| fig-cap: "Relationship between temperature @ 9am and temperature @ 3pm at 3 different Austrilian locations."
+
+ggplot(weather, aes(y = temp3pm, x = temp9am, color = location)) + 
+  geom_point() + 
+  labs(x = "Temp @ 9AM", y = "Temp @ 3PM", color = "Location")
+```
+
+```{r}
+#| fig-cap: "Relationship between temperature @ 9am and temperature @ 3pm at 3 different Austrilian locations."
+#| fig-alt: "A scatter plot of relationship between temperature @ 9am and temperature @ 3pm at 3 different Austrilian locations, namely, Hobart, Uluru, and Wollongong.  The relationship for the 3 locations are positive and strong with Uluru hold the strongest relationship."
+
+ggplot(weather, aes(y = temp3pm, x = temp9am, color = location)) + 
+  geom_point() + 
+  labs(x = "Temp @ 9AM", y = "Temp @ 3PM", color = "Location")
+```
+
+
+```{r}
+#| fig-cap: "Relationship between temperature @ 9am and temperature @ 3pm at 3 different Austrilian locations."
+#| fig-alt: "A scatter plot of relationship between temperature @ 9am and temperature @ 3pm at 3 different Austrilian locations, namely, Hobart, Uluru, and Wollongong.  The relationship for the 3 locations are positive and strong with Uluru hold the strongest relationship."
+
+ggplot(weather, aes(y = temp3pm, x = temp9am, color = location)) + 
+  geom_point() + 
+  labs(x = "Temp @ 9AM", y = "Temp @ 3PM", color = "Location")
+```
