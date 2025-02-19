@@ -1,0 +1,15 @@
+---
+title: "ica-wrangle"
+---
+
+## Motivation
+
+```{r}
+# Load tidyverse & data
+library(tidyverse)
+elections <- read.csv("https://mac-stat.github.io/data/election_2020_county.csv")
+```
+```{r}
+
+```
+
