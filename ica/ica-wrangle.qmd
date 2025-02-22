@@ -5,11 +5,208 @@ title: "ica-wrangle"
 ## Motivation
 
 ```{r}
-# Load tidyverse & data
+# Load data
 library(tidyverse)
 elections <- read.csv("https://mac-stat.github.io/data/election_2020_county.csv")
 ```
-```{r}
 
+```{r}
+library(rnaturalearth)
+
+plot(ne_states(country = c("united states of america")) |> 
+       filter(!iso_3166_2 %in% c("US-AK", "US-HI")))
 ```
+
+```{r}
+ne_states(country = c("saudi arabia", "iran", "iraq")) |> 
+  slice(0) |> 
+  glimpse()
+```
+
+
+```{r}
+# What's the first argument? The second?
+select(elections, c(state_name, county_name, dem_pct_20, dem_pct_16))
+```
+
+## Ex1
+
+```{r}
+elections_small <- elections |> 
+  select(state_name, county_name, total_votes_20, repub_pct_20, dem_pct_20, total_votes_16, dem_pct_16)
+
+head(elections_small)
+```
+
+## Ex2
+```{r}
+elections_small |> 
+  filter(state_name == "Hawaii")
+```
+
+```{r}
+elections_small |> 
+  filter(state_name  %in% c("Hawaii", "Delaware"))
+```
+
+```{r}
+elections_small |> 
+  filter(repub_pct_20 > 93.97)
+```
+
+```{r}
+elections_small |> 
+  filter(repub_pct_20 >= 93.97)
+```
+
+```{r}
+elections_small |> 
+  filter(state_name == "Texas") |> 
+  filter(repub_pct_20 > 65)
+```
+
+```{r}
+elections_small |> 
+  filter(state_name == "Texas", repub_pct_20 > 65)
+```
+
+## Ex3
+
+```{r}
+elections_small |> 
+  arrange(repub_pct_20) |> 
+  head()
+```
+
+```{r}
+elections_small |> 
+  arrange(desc(repub_pct_20)) |> 
+  head()
+```
+
+## Ex4
+
+```{r}
+elections_small |> 
+  mutate(diff_20 = repub_pct_20 - dem_pct_20, .after = dem_pct_20) |> 
+  head()
+```
+
+```{r}
+elections_small |> 
+  mutate(repub_votes_20 = round(total_votes_20 * repub_pct_20/100), .after = repub_pct_20)
+```
+
+```{r}
+elections_small |> 
+  mutate(repub_win_20 = repub_pct_20 > dem_pct_20, .after = dem_pct_20)
+```
+
+```{r}
+elections_small |> 
+  select(-total_votes_20, -total_votes_16, -repub_pct_20) |> 
+  mutate(dem_delta = dem_pct_20 - dem_pct_16) |> 
+  select(state_name, county_name, dem_pct_16, dem_pct_20, dem_delta)
+```
+
+```{r}
+elections_small |> 
+  select(-total_votes_20, -total_votes_16, -repub_pct_20) |> 
+  mutate(dem_hi = dem_pct_20 > dem_pct_16) |> 
+  select(state_name, county_name, dem_pct_16, dem_pct_20, dem_hi)
+```
+
+## Ex5
+
+
+## Ex6
+
+```{r}
+elections_small |> 
+  filter(state_name == "Minnesota") |> 
+  select(county_name, dem_pct_20) |> 
+  arrange(desc(dem_pct_20))
+```
+
+```{r}
+mn_wi <- elections_small |> 
+  filter(state_name %in% c("Minnesota", "Wisconsin")) |> 
+  select(state_name, county_name, dem_pct_16, dem_pct_20) |> 
+  mutate(dem_delta = dem_pct_20 - dem_pct_16) |> 
+  arrange(desc(dem_delta))
+```
+
+```{r}
+#| fig-height: 4
+mn_wi |> ggplot() +
+  geom_boxplot(mapping = aes(x = dem_delta, y = state_name), 
+               width = .25, notch = TRUE)
+```
+
+## Ex7
+```{r}
+elections_small |> 
+  summarise(median(repub_pct_20))
+```
+
+```{r}
+elections_small |> 
+  summarise(median_repub = median(repub_pct_20))
+```
+
+```{r}
+elections_small |> 
+  summarise(median_repub = median(repub_pct_20), total_votes = sum(total_votes_20))
+```
+
+## Ex8
+
+```{r}
+elections_small |> 
+  group_by(state_name)
+```
+
+```{r}
+elections_small |> 
+  class()
+```
+
+```{r}
+elections_small |> 
+  group_by(state_name) |> 
+  class()
+```
+
+```{r}
+elections_small |> 
+  group_by(state_name) |> 
+  summarise(median_repub = median(repub_pct_20), total_votes = sum(total_votes_20))
+```
+
+## Ex9
+
+```{r}
+elections_small |> 
+  group_by(state_name) |> 
+  summarise(total_votes_20 = sum(total_votes_20)) |> 
+  arrange(desc(total_votes_20))
+```
+
+```{r}
+elections_small |> 
+  group_by(state_name) |> 
+  summarise(total_votes_20_rep = sum(round(total_votes_20 * repub_pct_20/100)),
+            total_votes_20_dem = sum(round(total_votes_20 * dem_pct_20/100)))
+```
+
+
+```{r}
+elections_small |> 
+  group_by(state_name) |> 
+  summarise(total_votes_20_rep = sum(round(total_votes_20 * repub_pct_20/100)),
+            total_votes_20_dem = sum(round(total_votes_20 * dem_pct_20/100))) |> 
+  filter(total_votes_20_dem > total_votes_20_rep)
+```
+
+
 
