@@ -427,7 +427,7 @@ head(states_map)
 states_map |> 
   group_by(region) |> 
   summarise(n = n()) |> 
-  arrange(n)
+  arrange(desc(n))
 ```
 
 ### Continous colors: Default
@@ -515,12 +515,14 @@ ggplot(elections_by_counties, aes(map_id = county_fips, fill = repub_20_categori
 ```
 
 ```{r}
-ggplot(elections_by_counties, aes(map_id = county_fips, fill = median_rent)) +
+elections_by_counties |> 
+  mutate(median_rent = cut(median_rent, 5)) |> 
+ggplot(aes(map_id = county_fips, fill = median_rent)) +
   geom_map(map = county_map) +
   expand_limits(x = county_map$long, y = county_map$lat) +
   theme_map() +
   theme(legend.position = "right") +
-  # scale_fill_manual(values = rev(brewer.pal(10, "RdBu")), name = "") +
+  scale_fill_manual(values = rev(brewer.pal(5, "RdBu")), name = "") +
   coord_equal() +
   labs(title = "Median Rent 2020")
 ```
