@@ -1,5 +1,6 @@
 ---
 title: "Dates"
+code-annotations: select
 ---
 
 ## Example 1
@@ -72,7 +73,7 @@ ggplot(penguins, aes(x = species)) +
 ```{r}
 penguins |> 
   group_by(species) |> 
-  summarise(n =)
+  summarise(n = n())
 ```
 
 ```{r}
@@ -109,6 +110,7 @@ penguins |>
 ```
 
 ## Ex 1
+
 ```{r}
 # Create a dataset with just Adelie and Chinstrap using %in%
 # Pipe this into `count(species)` to confirm that you only have these 2 species
@@ -123,15 +125,239 @@ penguins |>
   count(species)
 ```
 
+
+```{r}
+penguins |> 
+  summarise(`no obs` = n())
+```
+
+
 ```{r}
 penguins |> 
   filter(is.na(body_mass_g)) |> 
-  summarise(n = n())
+  summarise(`no obs with missing body mass` = n())
+```
+
+
+```{r}
+penguins |> 
+  filter(if_any(everything(), is.na)) |> 
+  summarise(`no obs w/ missing val` = n())
+```
+
+```{r}
+penguins |>
+  na.omit() |>
+  summarise(`no obs w/o missing val` = n())
+```
+
+## Ex 2
+
+```{r}
+names(penguins)
+```
+
+```{r}
+# Use a shortcut to keep everything but the year and island variables
+penguins |> 
+  select(-year, -island)
+```
+
+```{r}
+# Use a shortcut to keep only species and the penguin characteristics measured in mm
+penguins |> 
+  select(species, ends_with("mm"))
+```
+
+```{r}
+# Use a shortcut to keep only species and bill-related measurements
+penguins |> 
+  select(species, starts_with("bill"))
+```
+
+```{r}
+# Use a shortcut to keep only species and the length-related characteristics
+penguins |> 
+  select(species, contains("length"))
+```
+
+## Ex 3
+```{r}
+penguins |> 
+  arrange(species, island)
 ```
 
 ```{r}
 penguins |> 
-  na.omit() |> 
-  summarise(n = n())
+  group_by(species, sex) |> 
+  count()
+```
+
+```{r}
+penguins |> 
+  group_by(species, sex) |> 
+  summarise(mean = mean(body_mass_g, na.rm = TRUE))
+```
+
+
+## Ex 4
+
+```{r}
+as.Date(today())
+```
+
+```{r}
+today()
+```
+
+```{r}
+today() |> 
+  class()
+```
+
+```{r}
+today() |> 
+  as.Date() |> 
+  class()
+```
+
+```{r}
+today() |> 
+  year()
+```
+
+```{r}
+today() |> 
+  month()
+```
+
+```{r}
+today() |> 
+  month(label = TRUE)
+```
+
+```{r}
+today() |> 
+  week()
+```
+
+```{r}
+today() |> 
+  mday()
+```
+
+```{r}
+today() |> 
+  yday()
+```
+
+```{r}
+today() |> 
+  wday()
+```
+
+```{r}
+today() |> 
+  wday(label = TRUE)
+```
+
+## Ex 5
+```{r}
+library(mosaic)
+```
+
+```{r}
+data("Birthdays")
+```
+
+```{r}
+glimpse(Birthdays)
+```
+
+```{r}
+Birthdays |> 
+  group_by(state) |> 
+  count() |> 
+  arrange(desc(n))
+```
+
+```{r}
+Birthdays |> 
+  summarise(`total births` = sum(births))
+```
+
+```{r}
+Birthdays |> 
+  group_by(state) |> 
+  summarise(`total births` = sum(births)) |> 
+  arrange(`total births`)
+```
+
+## Ex 6
+
+```{r}
+Birthdays |> 
+  group_by(date) |> 
+  summarise(`total births` = sum(births)) |> 
+  ggplot() +
+  geom_line(aes(x = date, y = `total births`, color = wday(date, label = TRUE)))
+```
+
+## Ex 7
+
+### a
+
+```{r}
+Birthdays |> 
+  mutate(month = month(date, label = TRUE)) |> 
+  group_by(year, month) |> 
+  summarise(total_births = sum(births)) |> 
+  ggplot() +
+  geom_boxplot(aes(x = month, y = total_births))
+```
+
+### b
+
+```{r}
+Birthdays |> 
+  filter(year == 1988) |> 
+  mutate(wk = week(date)) |>
+  filter(wk != 53) |> 
+  group_by(state, wk) |> 
+  summarise(births = sum(births)) |> 
+  ggplot() +
+  geom_line(aes(x = wk, y = births, color = state))
+```
+
+```{r}
+Birthdays |> 
+  filter(year == 1988, state %in% c("MN", "LA")) |> 
+  mutate(wk = week(date)) |> 
+  filter(wk != 53) |> 
+  group_by(state, wk) |> 
+  summarise(births = sum(births)) |> 
+  ggplot() +
+  geom_line(aes(x = wk, y = births, color = state))
+```
+
+## Ex 8
+
+### a
+
+```{r}
+Birthdays |> 
+  filter(year == 1979, state == "MA") |> 
+  arrange(desc(births))
+```
+
+### b
+
+```{r}
+Birthdays |> 
+  filter(date >= ymd("1979-09-09"), date <= ymd("1979-09-12")) |> 
+  group_by(state) |> 
+  summarise(births = sum(births)) |> 
+  arrange(desc(births)) |> 
+  head(5)
 ```
 
