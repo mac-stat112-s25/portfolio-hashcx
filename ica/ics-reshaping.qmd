@@ -1,0 +1,56 @@
+---
+title: "Reshaping Data"
+---
+
+## Religious Income Survey
+
+Distribution of income ranges reported by people from different religious groups.
+
+Source: https://tidyr.tidyverse.org/articles/pivot.html
+
+```{r}
+library(tidyverse)
+```
+
+```{r}
+relig_income
+```
+
+```{r}
+relig_income |> 
+  pivot_longer(cols = !religion, names_to = "income", values_to = "count") |> 
+  count(religion)
+```
+
+
+```{r}
+#| cap-location: bottom
+
+relig_income |> 
+  select(-`Don't know/refused`) |> 
+  filter(!religion %in% c("Don’t know/refused", 
+                          "Unaffiliated", 
+                          "Other World Religions", 
+                          "Other Faiths")) |> 
+  pivot_longer(cols = !religion, names_to = "income", values_to = "count") |> 
+  mutate(income = fct_rev(fct_relevel(income, c(">150k", 
+                                                "$100-150k", 
+                                                "$75-100k", 
+                                                "$50-75k", 
+                                                "$40-50k", 
+                                                "$30-40k", 
+                                                "$20-30k", 
+                                                "$10-20k", 
+                                                "<$10k"))), 
+         religion = fct_rev(religion)) |> 
+  ggplot() +
+  geom_bar(aes(fill = income, x = count, y = religion), 
+           color = "white", 
+           stat = "identity", 
+           position = "fill") +
+  scale_fill_viridis_d() +
+  theme_classic() +
+  labs(caption = "Data from tidyr package vignette: https://tidyr.tidyverse.org/articles/pivot.html") +
+  theme(plot.caption.position = "plot")
+```
+
