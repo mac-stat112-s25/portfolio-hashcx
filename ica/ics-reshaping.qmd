@@ -10,6 +10,7 @@ Source: https://tidyr.tidyverse.org/articles/pivot.html
 
 ```{r}
 library(tidyverse)
+library(extrafont)   # custom fonts
 ```
 
 ```{r}
@@ -25,6 +26,13 @@ relig_income |>
 
 ```{r}
 #| cap-location: bottom
+
+# load font, see what font avaible using windowsFonts()
+# discussion: https://stackoverflow.com/questions/34522732/changing-fonts-in-ggplot2
+choose_font("Source Sans 3 ExtraLight", quiet = TRUE)
+
+# 
+loadfonts(device = "win")
 
 relig_income |> 
   select(-`Don't know/refused`) |> 
@@ -51,6 +59,8 @@ relig_income |>
   scale_fill_viridis_d() +
   theme_classic() +
   labs(caption = "Data from tidyr package vignette: https://tidyr.tidyverse.org/articles/pivot.html") +
-  theme(plot.caption.position = "plot")
+  theme(text = element_text(family = "mono", size = 16), 
+        plot.caption.position = "plot",
+        plot.caption = element_text(color = "darkgray", size = 12))
 ```
 
