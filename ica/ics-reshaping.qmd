@@ -2,16 +2,221 @@
 title: "Reshaping Data"
 ---
 
+```{r}
+library(tidyverse)
+library(extrafont)   # custom fonts
+```
+
+## Example 1
+
+```{r}
+penguins <- read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-07-28/penguins.csv')
+penguins
+```
+
+```{r}
+penguins |> 
+  count(species, sex)
+```
+
+```{r}
+penguins |> 
+  group_by(species, sex) |> 
+  summarise(count = n())
+```
+
+```{r}
+penguins |> 
+  group_by(species, sex) |> 
+  summarise(count = n()) |> 
+  mutate(prop = count/sum(count))
+```
+
+## Example 2
+```{r}
+penguins_avg <- penguins |> 
+  group_by(species, sex) |> 
+  summarise(avg_body_mass = mean(body_mass_g, na.rm = TRUE)) |> 
+  na.omit()
+penguins_avg
+```
+
+## Example 5
+
+```{r}
+penguins_avg |> 
+  pivot_wider(names_from = sex, values_from = avg_body_mass)
+```
+
+## Example 7
+
+```{r}
+food <- data.frame(
+  customer = rep(c("A", "B"), each = 3),
+  restaurant = rep(c("Shish", "FrenchMeadow", "DunnBros"), 2),
+  order = c("falafel", "salad", "coffee", "baklava", "pastry", "tea")
+)
+food
+```
+
+```{r}
+food |> 
+  pivot_wider(names_from = restaurant, values_from = order)
+```
+
+```{r}
+more_food <- data.frame(
+  customer = c("C", "D"),
+  Shish = c("coffee", "maza"),
+  FrenchMeadow = c("soup", "sandwich"),
+  DunnBros = c("cookie", "coffee")
+)
+more_food
+```
+
+```{r}
+more_food |>
+  pivot_longer(cols = -customer, names_to = "resturant", values_to = "order")
+```
+
+## Ex2
+
+```{r}
+sleep_wide <- read.csv("https://mac-stat.github.io/data/sleep_wide.csv")
+
+sleep_wide
+```
+
+```{r}
+sleep_long <- sleep_wide |> 
+  pivot_longer(cols = -Subject, 
+               names_to = "day", 
+               names_prefix = "day_",
+               values_to = "react") |> 
+  mutate(day = as.integer(day),
+         Subject = as.factor(Subject))
+sleep_long
+```
+
+```{r}
+sleep_long |> 
+  ggplot(aes(x = day, y = react, color = Subject)) +
+  geom_line()
+```
+
+```{r}
+sleep_long |> 
+  ggplot(aes(x = day, y = react)) +
+  geom_line() +
+  facet_wrap(~Subject)
+```
+
+```{r}
+sleep_long |> 
+  ggplot(aes(x = day, y = react)) +
+  geom_boxplot(aes(x = as.factor(day), y = react), inherit.aes = FALSE) +
+  geom_jitter() +
+  geom_smooth(method = "lm", se = FALSE)
+```
+
+
+## Ex5
+
+```{r}
+data("billboard")
+glimpse(billboard)
+```
+
+```{r}
+billboard |> 
+  group_by(artist) |> 
+  summarise(n = n()) |> 
+  arrange(desc(n))
+```
+
+```{r}
+billboard |>
+  ggplot(aes(x = wk1, y = wk2)) +
+  geom_point() +
+  geom_abline(intercept = 0, slope = 1) + 
+  geom_label(billboard |> filter(wk2 > wk1), mapping = aes(label = track))
+```
+
+```{r}
+billboard |> 
+  filter(wk2 > wk1)
+```
+
+```{r}
+billboard |> 
+  filter(date.entered == "1999-11-06") |> 
+  select(-track, -date.entered) |> 
+  pivot_longer(cols = starts_with("wk"),  
+               names_to = "wk",
+               names_prefix = "wk",
+               values_to = "rank") |> 
+  mutate(wk = as.integer(wk)) |> 
+  ggplot(aes(x = wk, y = rank, color = artist)) +
+  geom_line()
+```
+
+## Ex6
+
+```{r}
+library(fivethirtyeight)
+```
+
+```{r}
+data("daily_show_guests")
+glimpse(daily_show_guests)
+```
+### A: Top 15 Guest
+
+```{r}
+daily_show_guests |> 
+  count(raw_guest_list) |> 
+  arrange(desc(n)) |> 
+  head(15)
+```
+
+### B: Summary Table
+```{r}
+daily_show_guests |> 
+  group_by(raw_guest_list, year) |> 
+  summarize(n_year = n()) |> 
+  mutate(n_total = n()) |> 
+  arrange(desc(n_total)) |> 
+  group_by(raw_guest_list) |> 
+  pivot_wider(names_from = year, values_from = n_year, values_fill = 0) |> 
+  head(15)
+  
+```
+
+### C: Top Cat
+
+```{r}
+daily_show_guests |> 
+  mutate(broad_group = case_when(
+    group %in% c("Acting", "Athletics", "Comedy", "Musician") ~ "Acting, Commedy & Music",
+    group %in% c("Media", "media", "Science", "Academic", "Consultant", "Clergy") ~ "Media",
+    group %in% c("Politician", "Political Aide", "Government", "Military", "Business", "Advocacy") ~ "Government and Politics",
+    .default = NA
+  )) |> 
+  filter(!is.na(broad_group)) |> 
+  group_by(year, broad_group) |> 
+  summarise(n = n()) |> 
+  mutate(p = n/sum(n)) |> 
+  ggplot(aes(x = year, y = p, color = broad_group)) +
+  geom_line(linewidth = 1.5)
+```
+
+
+
 ## Religious Income Survey
 
 Distribution of income ranges reported by people from different religious groups.
 
 Source: https://tidyr.tidyverse.org/articles/pivot.html
-
-```{r}
-library(tidyverse)
-library(extrafont)   # custom fonts
-```
 
 ```{r}
 relig_income
