@@ -1,0 +1,207 @@
+---
+title: "Joins"
+---
+
+## Ex 1
+
+```{r}
+students_2 <- data.frame(
+  student = c("D", "E", "F"),
+  class = c("COMP 101", "BIOL 101", "POLI 101")
+)
+students_2
+```
+
+```{r}
+enrollments_2 <- data.frame(
+  course = c("ART 101", "BIOL 101", "COMP 101"),
+  enrollment = c(18, 20, 19)
+)
+enrollments_2
+```
+
+```{r}
+students_2 |> 
+  left_join(enrollments_2, join_by(class == course))
+```
+
+
+
+## R for Data Science Book
+
+This section is a practice for the [Joins Chapter]((https://r4ds.hadley.nz/joins)) from [R for Data Science Book](https://r4ds.hadley.nz/)
+
+```{r}
+library(tidyverse)
+library(nycflights13)  # Flights that Departed NYC in 2013
+library(Lahman)        # baseball database
+```
+
+### Primary Keys
+
+Notice the **primary key** the each of the following dataset has followed by 
+
+a. a verification if it is actually uniquely identify each observation.
+b. a verification that it does not have missing values so that it can identify an observation.
+```{r}
+glimpse(airlines)
+```
+
+```{r}
+airlines |> 
+  count(carrier) |> 
+  filter(n > 1)
+```
+```{r}
+airlines |> 
+  filter(is.na(carrier))
+```
+
+
+```{r}
+glimpse(airports)
+```
+```{r}
+airports |> 
+  count(faa) |> 
+  filter(n > 1)
+```
+
+```{r}
+airports |> 
+  filter(is.na(faa))
+```
+
+
+```{r}
+glimpse(planes)
+```
+
+```{r}
+planes |> 
+  count(tailnum) |> 
+  filter(n > 1)
+```
+
+```{r}
+planes |> 
+  filter(is.na(tailnum))
+```
+
+### Composite Keys
+
+Notice the **composite key**: `origin` and `time_hour` that the `weather` dataset has followed by 
+
+a. a verification if they are actually uniquely identify each observation.
+b. a verification that they do not have missing values so that they can identify an observation.
+```{r}
+glimpse(weather)
+```
+
+```{r}
+weather |> 
+  count(origin, time_hour) |> 
+  filter(n > 1)
+```
+
+```{r}
+weather |> 
+  filter(is.na(origin) | is.na(time_hour))
+```
+
+The following set of keys can be
+```{r}
+weather |> 
+  group_by(year, month, day, hour, origin) |> 
+  mutate(n = n()) |> 
+  filter(n > 1) |> 
+  select(year, month, day, hour, origin, time_hour, n)
+```
+
+
+### Foreign Keys
+
+Notice the **foreign keys** the the `flights` dataset has.
+
+```{r}
+glimpse(flights)
+```
+
+### Surrogate Keys
+
+Adding a surrogate key to the `flights` dataset to make is easy to reference observations since the `flights` dataset does not have a primary key but each observation can be identified using 3 variables: `carrier`, `flight`, and `time_hour`.
+
+```{r}
+flights2 <- flights |> 
+  mutate(id = row_number(), .before = 1)
+glimpse(flights2)
+```
+
+### Lahman Practice
+
+```{r}
+glimpse(Batting)
+```
+
+
+```{r}
+Batting |> 
+  count(playerID, yearID, stint) |> 
+  filter(n > 1)
+```
+
+
+```{r}
+glimpse(People)
+```
+
+```{r}
+People |> 
+  count(playerID) |> 
+  filter(n > 1)
+```
+
+```{r}
+Salaries
+```
+
+```{r}
+Salaries |> 
+  count(yearID, teamID, playerID) |> 
+  filter(n > 1)
+```
+
+### `left_join`
+
+```{r}
+flights3 <- flights |> 
+  select(year, time_hour, origin, dest, tailnum, carrier)
+flights3
+```
+
+```{r}
+flights3 |> 
+  left_join(airlines)
+```
+
+```{r}
+flights3 |> 
+  left_join(weather |> select(origin, time_hour, temp, wind_speed))
+```
+
+```{r}
+flights3 |> 
+  left_join(planes |> select(tailnum, type, engines, seats))
+```
+
+### Many to Many Join
+
+```{r}
+df1 <- tibble(key = c(1, 2, 2), val_x = c("x1", "x2", "x3"))
+df2 <- tibble(key = c(1, 2, 2), val_y = c("y1", "y2", "y3"))
+```
+
+```{r}
+df1 |> 
+  inner_join(df2, join_by(key == key), relationship = "many-to-many")
+```
