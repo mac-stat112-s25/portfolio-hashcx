@@ -1,0 +1,47 @@
+---
+title: "Factors"
+---
+
+```{r}
+library(tidyverse)
+elections <- read.csv("https://mac-stat.github.io/data/election_2020_county.csv") |> 
+  select(state_abbr, historical, county_name, total_votes_20, repub_pct_20, dem_pct_20) |> 
+  mutate(dem_support_20 = case_when(
+    (repub_pct_20 - dem_pct_20 >= 5) ~ "low",
+    (repub_pct_20 - dem_pct_20 <= -5) ~ "high",
+    .default = "medium"
+  ))
+
+# Check it out
+head(elections)
+
+# check structure
+str(elections)
+```
+
+```{r}
+elections |> 
+  slice(0) |> 
+  glimpse()
+```
+
+```{r}
+elections <- elections |> 
+  mutate(dem_support_20 = factor(dem_support_20))
+
+str(elections)
+```
+
+```{r}
+elections |> 
+  ggplot(aes(x = dem_support_20)) +
+  geom_bar()
+```
+
+```{r}
+elections |> 
+  mutate(dem_support_20 = fct_infreq(dem_support_20)) |> 
+  ggplot(aes(x = dem_support_20)) + 
+  geom_bar()
+```
+
