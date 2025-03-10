@@ -1,0 +1,121 @@
+---
+title: "Strings"
+---
+
+## R for Data Science Book
+
+This section is a practice for the [Strings Chapter](https://r4ds.hadley.nz/strings) from [R for Data Science Book](https://r4ds.hadley.nz/)
+
+### Load Packages
+
+```{r}
+library(tidyverse)
+library(babynames)
+```
+
+
+### Escapes
+
+```{r}
+double_quote <- "\""
+single_quote <- "\'"
+backslash <- "\\"
+
+x <- c(double_quote, single_quote, backslash)
+x
+
+str_view(babynames$name[1:10])
+```
+
+### Raw Strings
+```{r}
+tricky <- r"(double "hello" \n without any
+problem
+two)"
+str_view(tricky)
+```
+
+### Other Spatial Characters
+```{r}
+x <- c("one\ntwo", "one\ttwo", "\u00b5", "\U0001f604")
+x
+
+str_view(x)
+```
+
+### Exercises
+```{r}
+str_view(r"(He said "That's amazing!)")
+str_view(r"(\a\b\c\d)")
+str_view(r"(\\\\\\\)")
+```
+
+```{r}
+x <- "This\u00a0is\u00a0tricky"
+str_view(x)
+```
+### Creating Strings using `str_c`
+
+```{r}
+df <- tibble(name = c("Flora", "David", "Terra", NA))
+df |> 
+  mutate(greeting = str_c("Hi ", name, "!"))
+```
+
+```{r}
+df |> 
+  mutate(greeting1 = str_c("Hi ", coalesce(name, "you"), "!"),
+         greeting2 = coalesce(str_c("Hi ", name, "!"), "Hi!"))
+```
+
+### Creating String using `str_glue`
+
+```{r}
+df |> 
+  mutate(greeting = str_glue("Hi {name}!"))
+```
+
+```{r}
+df |> 
+  mutate(greeting = str_glue("{{Hi {name}!}}"))
+```
+
+
+### Combine using `str_flatten`
+
+```{r}
+df |> 
+  summarise(x = str_flatten(name, na.rm = TRUE))
+```
+
+
+```{r}
+fruites <- tribble(
+  ~ name, ~ fruit,
+  "Carmen", "banana",
+  "Carmen", "apple",
+  "Marvin", "nectarine",
+  "Terence", "cantaloupe",
+  "Terence", "papaya",
+  "Terence", "mandarin"
+)
+
+fruites |> 
+  summarise(x = str_flatten(name))
+
+fruites |> 
+  group_by(name) |> 
+  summarise(fruites = str_flatten(fruit, "-"))
+```
+
+
+```{r}
+str_c("hi", NA)
+paste0("hi", NA)
+```
+```{r}
+str_c(letters[1:2], letters[1:3])
+paste0(letters[1:2], letters[1:3])
+```
+
+
