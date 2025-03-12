@@ -2,6 +2,172 @@
 title: "Strings"
 ---
 
+## Example 1
+
+```{r}
+library(tidyverse)
+
+classes <- data.frame(
+  sem        = c("SP2023", "FA2023", "SP2024"),
+  area       = c("History", "Math", "Anthro"),
+  enroll     = c("30 - people", "20 - people", "25 - people"),
+  instructor = c("Ernesto Capello", "Lori Ziegelmeier", "Arjun Guneratne")
+)
+
+classes
+```
+
+```{r}
+# Define a new variable "num" that adds up the number of characters in the area label
+classes |> 
+  mutate(num = str_length(area))
+```
+
+```{r}
+# Change the areas to "history", "math", "anthro" instead of "History", "Math", "Anthro"
+classes |> 
+  mutate(area = str_to_lower(area))
+```
+
+
+```{r}
+# Create a variable that id's which courses were taught in spring
+classes |> 
+  mutate(spring = str_detect(sem, "SP"))
+```
+
+```{r}
+# Change the semester labels to "fall2023", "spring2024", "spring2023"
+classes |> 
+  mutate(sem = str_replace(sem, "SP", "spring")) |> 
+  mutate(sem = str_replace(sem, "FA", "fall"))
+```
+
+```{r}
+# In the enroll variable, change all e's to 3's (just because?)
+classes |> 
+  mutate(enroll = str_replace_all(enroll, "e", "3"))
+```
+
+```{r}
+# Use sem to create 2 new variables, one with only the semester (SP/FA) and 1 with the year
+classes |> 
+  mutate(seme = str_sub(sem, 1, 2),
+         year = str_sub(sem, 3,  8))
+```
+
+## Example 3
+
+```{r}
+classes |> 
+  separate(instructor, into = c("first", "last"))
+```
+
+```{r}
+classes |> 
+  separate(enroll, into = c("size", "pe"), sep = "-")
+```
+
+## Ex 1
+
+```{r}
+courses <- read.csv("https://mac-stat.github.io/data/registrar.csv")
+
+# Check it out
+head(courses)
+```
+
+```{r}
+courses |> 
+  count(days, time) |> 
+  arrange(desc(n))
+```
+
+## Ex 2
+
+```{r}
+courses_clean <- courses |> 
+  separate(avail_max, into = c("avai", "max"), sep = "/") |> 
+  mutate(enrollment = as.numeric(max) - as.numeric(avai)) |> 
+  separate(number, into = c("dept", "number", "section"), sep = "[ -]")
+courses_clean
+```
+
+## Ex 3
+
+```{r}
+courses_clean |> 
+  count(dept) |> 
+  arrange(desc(n))
+```
+
+```{r}
+courses_clean |> 
+  select(dept, name) |> 
+  mutate(cL = str_length(name)) |> 
+  group_by(dept) |> 
+  summarise(av_cL = mean(cL)) |> 
+  arrange(desc(av_cL))
+```
+
+## Ex 4
+
+
+```{r}
+courses_clean |> 
+  filter(instructor == "Alicia Johnson")
+```
+
+```{r}
+courses_clean |> 
+  filter(dept == "STAT") |> 
+  mutate(name = str_remove(name, "Introduction to")) |> 
+  mutate(name = str_replace(name, "Statistical", "Stat")) |> 
+  separate(time, into = c("start", "end"), sep = "-") |> 
+  select(number, name, start, enrollment)
+```
+
+## Ex 5
+```{r}
+enrollment <- courses_clean |> 
+  filter(!dept  %in% c("PE", "INTD")) |> 
+  filter(!(dept == "MUSI" & as.numeric(number) < 100)) |> 
+  filter(!str_detect(section, "L"))
+enrollment
+```
+
+## Ex 6
+
+```{r}
+#| fig-height: 6
+#| fig-width: 4
+enrollment |> 
+  ggplot(aes(y = fct_reorder(dept, enrollment, .fun = median), x = enrollment)) + 
+  geom_boxplot()
+```
+
+## Ex 7
+
+```{r}
+enrollments_2 <- enrollment |> 
+  distinct(days, time, instructor, .keep_all = TRUE)
+```
+
+```{r}
+enrollments_2 |>
+  filter(instructor == "Brianna Heggeseth", name == "Introduction to Data Science")
+```
+
+```{r}
+#| fig-height: 35
+#| fig-width: 6
+enrollments_2 |> 
+  ggplot(aes(y = fct_reorder(instructor, enrollment), x = enrollment)) +
+  geom_boxplot()
+```
+
+
+
 ## R for Data Science Book
 
 This section is a practice for the [Strings Chapter](https://r4ds.hadley.nz/strings) from [R for Data Science Book](https://r4ds.hadley.nz/)
@@ -113,9 +279,123 @@ fruites |>
 str_c("hi", NA)
 paste0("hi", NA)
 ```
+
 ```{r}
 str_c(letters[1:2], letters[1:3])
 paste0(letters[1:2], letters[1:3])
 ```
 
 
+### Extractind Data from Strings
+
+#### Seperate into rows
+
+```{r}
+df1 <- tribble(
+  ~x, ~y,
+  "a,b,c", "y1",
+  "e,f", "y2",
+  "g", "y3"
+)
+df1
+```
+
+```{r}
+df1 |> 
+  separate_longer_delim(x, delim = ",")
+```
+
+```{r}
+df2 <- tribble(
+  ~x, ~y,
+  "1211", "action",
+  "3411", "do it now",
+  "3311", "cancel"
+)
+df2
+```
+
+```{r}
+df2 |> 
+  separate_longer_position(x, width = 1)
+```
+
+#### Seperate into Columsn
+
+```{r}
+df3 <- tribble(
+  ~code, ~name,
+  "a10.1.2022", "book",
+  "b20.16.2024", "journal",
+  "a20.4.2025", "skit"
+)
+df3
+```
+
+```{r}
+df3 |> 
+  separate_wider_delim(code, delim = ".", names_sep = "-")
+```
+
+### Letters
+
+#### Length
+
+```{r}
+str_length(c("amin", "macalester", NA))
+```
+
+```{r}
+babynames |> 
+  group_by(name) |>
+  summarise(N = sum(n)) |> 
+  mutate(nL = str_length(name), .after = name) |> 
+  arrange(desc(nL), desc(N))
+```
+
+```{r}
+babynames |> 
+  count(length = str_length(name), wt = n)
+```
+
+```{r}
+babynames |> 
+  mutate(nL = str_length(name), .after = name) |> 
+  group_by(year) |> 
+  summarise(avg_nL = mean(nL)) |> 
+  ggplot(aes(x = year, y = avg_nL)) +
+  geom_line()
+```
+
+```{r}
+babynames |> 
+  mutate(first = str_to_lower(str_sub(name, 1, 1)),
+         last = str_to_lower(str_sub(name, -1, -1)), 
+         .after = name) |> 
+  select(first, last) |> 
+  group_by(first) |> 
+  mutate(first_n = n()) |> 
+  group_by(last) |> 
+  mutate(last_n = n()) |> 
+  ggplot() + 
+  geom_col(aes(x = first, y = first_n), alpha = .2, color = "red") +
+  geom_col(aes(x = last, y = last_n), alpha = .2, color = "blue")
+```
+
+### Encoding
+
+```{r}
+str_to_upper(c("i", "ı"))
+str_to_upper(c("i", "ı"), locale = "tr")
+```
+
+```{r}
+str_sort(c("a", "c", "ch", "h", "z"))
+str_sort(c("a", "c", "ch", "h", "z"), locale = "cs") # cs: Czech
+```
+
+
+#### References
+
+- [Detailed Explaintion for Encoding](http://kunststube.net/encoding/)
+- `stringi::stri_locale_list()` give the list of supported encoding and locals by `stringr` ... `en_GB`: English encoding with Great British local, `en_US`: English encoding with US local.
