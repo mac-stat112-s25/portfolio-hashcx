@@ -166,6 +166,44 @@ enrollments_2 |>
   geom_boxplot()
 ```
 
+## Extra
+
+```{r}
+courses_clean |> 
+  select(days, time) |> 
+  filter(!is.na(time)) |> 
+  separate_wider_delim(time, delim = "-", names = c("s", "e"), too_few = "debug") |>
+  filter(time != "") |> 
+  select(days, s, e)
+```
+
+## Dig Deeper
+
+```{r}
+# Define some strings to play around with
+example <- "The quick brown fox jumps over the lazy dog."
+```
+
+```{r}
+str_replace(example, "quick", "really quick")
+```
+
+```{r}
+str_replace_all(example, "(f|d|q)", "****")
+```
+
+```{r}
+str_replace_all(example, "[A-Z]", "****")
+```
+
+```{r}
+# replace space with ` * `
+str_replace_all(example, "[ ]", " * ")
+```
+
+```{r}
+
+```
 
 
 ## R for Data Science Book
