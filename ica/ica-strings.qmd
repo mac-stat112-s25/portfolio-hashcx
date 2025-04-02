@@ -437,3 +437,4 @@ str_sort(c("a", "c", "ch", "h", "z"), locale = "cs") # cs: Czech
 
 - [Detailed Explaintion for Encoding](http://kunststube.net/encoding/)
 - `stringi::stri_locale_list()` give the list of supported encoding and locals by `stringr` ... `en_GB`: English encoding with Great British local, `en_US`: English encoding with US local.
+
